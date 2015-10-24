@@ -146,36 +146,36 @@ public class K9TeleOp extends OpMode {
 
 		/**
 
-		float winchPower = -gamepad2.left_stick_y;
+		 float winchPower = -gamepad2.left_stick_y;
 
-		// clip the right/left values so that the values never exceed +/- 1
-		winchPower = Range.clip(winchPower, -1, 1);
+		 // clip the right/left values so that the values never exceed +/- 1
+		 winchPower = Range.clip(winchPower, -1, 1);
 
-		// scale the joystick value to make it easier to control
-		// the robot more precisely at slower speeds.
-		winchPower = (float)scaleInput(winchPower);
+		 // scale the joystick value to make it easier to control
+		 // the robot more precisely at slower speeds.
+		 winchPower = (float)scaleInput(winchPower);
 
 
-		// write the values to the motors
-		winch.setPower(winchPower);
+		 // write the values to the motors
+		 winch.setPower(winchPower);
 
-		float armPosition = 0.5f;
+		 float armPosition = 0.5f;
 
-		// update the position of the arm.
-		if (gamepad2.a && armPosition < ARM_MAX_RANGE) {
-			// if the A button is pushed on gamepad2, increment the position of
-			// the arm servo.
-			armPosition += ARM_DELTA * ARM_SPEED_MULTIPLIER;
-		}
+		 // update the position of the arm.
+		 if (gamepad2.a && armPosition < ARM_MAX_RANGE) {
+		 // if the A button is pushed on gamepad2, increment the position of
+		 // the arm servo.
+		 armPosition += ARM_DELTA * ARM_SPEED_MULTIPLIER;
+		 }
 
-		if (gamepad2.b && armPosition > ARM_MIN_RANGE) {
-			// if the b button is pushed on gamepad2, decrease the position of
-			// the arm servo.
-			armPosition -= ARM_DELTA * ARM_SPEED_MULTIPLIER;
-		}
+		 if (gamepad2.b && armPosition > ARM_MIN_RANGE) {
+		 // if the b button is pushed on gamepad2, decrease the position of
+		 // the arm servo.
+		 armPosition -= ARM_DELTA * ARM_SPEED_MULTIPLIER;
+		 }
 
-		arm.setPower(armPosition);
-		**/
+		 arm.setPower(armPosition);
+		 **/
 
 
 
