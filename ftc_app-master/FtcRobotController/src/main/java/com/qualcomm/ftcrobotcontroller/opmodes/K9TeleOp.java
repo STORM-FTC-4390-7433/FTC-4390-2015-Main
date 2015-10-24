@@ -1,16 +1,22 @@
 /* Copyright (c) 2014 Qualcomm Technologies Inc
+
 All rights reserved.
+
 Redistribution and use in source and binary forms, with or without modification,
 are permitted (subject to the limitations in the disclaimer below) provided that
 the following conditions are met:
+
 Redistributions of source code must retain the above copyright notice, this list
 of conditions and the following disclaimer.
+
 Redistributions in binary form must reproduce the above copyright notice, this
 list of conditions and the following disclaimer in the documentation and/or
 other materials provided with the distribution.
+
 Neither the name of Qualcomm Technologies Inc nor the names of its contributors
 may be used to endorse or promote products derived from this software without
 specific prior written permission.
+
 NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS
 LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
@@ -37,34 +43,21 @@ import com.qualcomm.robotcore.util.Range;
  */
 public class K9TeleOp extends OpMode {
 
-	/*
-	 * Note: the configuration of the servos is such that
-	 * as the arm servo approaches 0, the arm position moves up (away from the floor).
-	 * Also, as the claw servo approaches 0, the claw opens up (drops the game element).
-	 */
-	// TETRIX VALUES.
-	final static double ARM_MIN_RANGE  = 0.20;
-	final static double ARM_MAX_RANGE  = 0.90;
-	final static double CLAW_MIN_RANGE  = 0.20;
-	final static double CLAW_MAX_RANGE  = 0.7;
 
-	// position of the arm servo.
-	double armPosition;
+	/*final static double ARM_MIN_RANGE  = 0.60;
+	final static double ARM_MAX_RANGE  = 1.5;
+	final static double ARM_DELTA = 0.2;
+	final static double ARM_SPEED_MULTIPLIER = 1.0;
+	final static double WINCH_SPEED_MULTIPLIER = 1.0;
+	*/
 
-	// amount to change the arm servo position.
-	double armDelta = 0.1;
+	DcMotor motorFrontRight;
+	DcMotor motorBackRight;
+	DcMotor motorFrontLeft;
+	DcMotor motorBackLeft;
 
-	// position of the claw servo
-	double clawPosition;
-
-	// amount to change the claw servo position by
-	double clawDelta = 0.1;
-
-	DcMotor motorRight1;
-	DcMotor motorRight2;
-	DcMotor motorLeft1;
-	DcMotor motorLeft2;
-	//Servo climberSwitch;
+	//DcMotor winch;
+	//DcMotor arm;
 
 	/**
 	 * Constructor
@@ -75,7 +68,7 @@ public class K9TeleOp extends OpMode {
 
 	/*
 	 * Code to run when the op mode is first enabled goes here
-	 *
+	 * 
 	 * @see com.qualcomm.robotcore.eventloop.opmode.OpMode#start()
 	 */
 	@Override
@@ -87,31 +80,32 @@ public class K9TeleOp extends OpMode {
 		 * that the names of the devices must match the names used when you
 		 * configured your robot and created the configuration file.
 		 */
-
+		
 		/*
 		 * For the demo Tetrix K9 bot we assume the following,
 		 *   There are two motors "motor_1" and "motor_2"
 		 *   "motor_1" is on the right side of the bot.
 		 *   "motor_2" is on the left side of the bot and reversed.
-		 *
+		 *   
 		 * We also assume that there are two servos "servo_1" and "servo_6"
 		 *    "servo_1" controls the arm joint of the manipulator.
 		 *    "servo_6" controls the claw joint of the manipulator.
 		 */
-		motorRight1 = hardwareMap.dcMotor.get("motor_1");
-		motorRight2 = hardwareMap.dcMotor.get("motor_2");
-		motorLeft1 = hardwareMap.dcMotor.get("motor_3");
-		motorLeft2 = hardwareMap.dcMotor.get("motor_4");
-		//motorLeft.setDirection(DcMotor.Direction.REVERSE);
+		motorFrontRight = hardwareMap.dcMotor.get("motor_2");
+		motorFrontLeft = hardwareMap.dcMotor.get("motor_0");
+		motorBackRight = hardwareMap.dcMotor.get("motor_3");
+		motorBackLeft = hardwareMap.dcMotor.get("motor_1");
 
-		// assign the starting position of the wrist and claw
-		//armPosition = 0.2;
-		//clawPosition = 0.2;
+		//arm = hardwareMap.dcMotor.get("motor_4");
+		//winch = hardwareMap.dcMotor.get("motor_5");
+
+
+
 	}
 
 	/*
 	 * This method will be called repeatedly in a loop
-	 *
+	 * 
 	 * @see com.qualcomm.robotcore.eventloop.opmode.OpMode#run()
 	 */
 	@Override
@@ -119,7 +113,7 @@ public class K9TeleOp extends OpMode {
 
 		/*
 		 * Gamepad 1
-		 *
+		 * 
 		 * Gamepad 1 controls the motors via the left stick, and it controls the
 		 * wrist/claw via the a,b, x, y buttons
 		 */
@@ -130,69 +124,60 @@ public class K9TeleOp extends OpMode {
 		// and 1 is full right
 		float throttleLeft = -gamepad1.left_stick_y;
 		float throttleRight = -gamepad1.right_stick_y;
-		//float direction = gamepad1.left_stick_x;
-		//float right;
-		//float left;
+
 
 		// clip the right/left values so that the values never exceed +/- 1
-		throttleRight = Range.clip(throttleRight, -1, 1);
-		throttleLeft = Range.clip(throttleLeft, -1, 1);
+		float right = Range.clip(throttleRight, -1, 1);
+		float left = Range.clip(throttleLeft, -1, 1);
 
 		// scale the joystick value to make it easier to control
 		// the robot more precisely at slower speeds.
-		throttleRight = (float)scaleInput(throttleRight);
-		throttleLeft =  (float)scaleInput(throttleLeft);
+		right = (float)scaleInput(right);
+		left =  (float)scaleInput(left);
 
 		// write the values to the motors
-		motorRight1.setPower(throttleRight);
-		motorRight2.setPower(throttleRight);
-		motorLeft1.setPower(throttleLeft);
-		motorLeft2.setPower(throttleLeft);
+		motorFrontRight.setPower(-right);
+		motorBackRight.setPower(-right);
+		motorFrontLeft.setPower(left);
+		motorBackLeft.setPower(left);
+
+		// throttle: left_stick_y ranges from -1 to 1, where -1 is full up, and
+		// 1 is full down
+
+		/**
+
+		float winchPower = -gamepad2.left_stick_y;
+
+		// clip the right/left values so that the values never exceed +/- 1
+		winchPower = Range.clip(winchPower, -1, 1);
+
+		// scale the joystick value to make it easier to control
+		// the robot more precisely at slower speeds.
+		winchPower = (float)scaleInput(winchPower);
+
+
+		// write the values to the motors
+		winch.setPower(winchPower);
+
+		float armPosition = 0.5f;
 
 		// update the position of the arm.
+		if (gamepad2.a && armPosition < ARM_MAX_RANGE) {
+			// if the A button is pushed on gamepad2, increment the position of
+			// the arm servo.
+			armPosition += ARM_DELTA * ARM_SPEED_MULTIPLIER;
+		}
 
-		//if (gamepad1.a) {
-		// if the A button is pushed on gamepad1, increment the position of
-		// the arm servo.
-		//armPosition += armDelta;
-		//}
+		if (gamepad2.b && armPosition > ARM_MIN_RANGE) {
+			// if the b button is pushed on gamepad2, decrease the position of
+			// the arm servo.
+			armPosition -= ARM_DELTA * ARM_SPEED_MULTIPLIER;
+		}
 
-		//if (gamepad1.y) {
-		// if the Y button is pushed on gamepad1, decrease the position of
-		// the arm servo.
-		//armPosition -= armDelta;
-		//}
-
-		// update the position of the claw
-		//if (gamepad1.x) {
-		//clawPosition += clawDelta;
-		//}
-
-		//if (gamepad1.b) {
-		//clawPosition -= clawDelta;
-		//}
-
-		// clip the position values so that they never exceed their allowed range.
-		//armPosition = Range.clip(armPosition, ARM_MIN_RANGE, ARM_MAX_RANGE);
-		//clawPosition = Range.clip(clawPosition, CLAW_MIN_RANGE, CLAW_MAX_RANGE);
-
-		// write position values to the wrist and claw servo
-		//arm.setPosition(armPosition);
-		//claw.setPosition(clawPosition);
+		arm.setPower(armPosition);
+		**/
 
 
-
-		/*
-		 * Send telemetry data back to driver station. Note that if we are using
-		 * a legacy NXT-compatible motor controller, then the getPower() method
-		 * will return a null value. The legacy NXT-compatible motor controllers
-		 * are currently write only.
-		 */
-		telemetry.addData("Text", "*** Robot Data***");
-		telemetry.addData("arm", "arm:  " + String.format("%.2f", armPosition));
-		telemetry.addData("claw", "claw:  " + String.format("%.2f", clawPosition));
-		telemetry.addData("left tgt pwr",  "left  pwr: " + String.format("%.2f", throttleLeft));
-		telemetry.addData("right tgt pwr", "right pwr: " + String.format("%.2f", throttleRight));
 
 	}
 
