@@ -33,8 +33,8 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.ftcrobotcontroller.opmodes.PushBotHardware;
 
 /**
  * TeleOp Mode
@@ -43,21 +43,16 @@ import com.qualcomm.robotcore.util.Range;
  */
 public class K9TeleOp extends OpMode {
 
+	final private int CLICKS_PER_ROTATION = 0;
 
-	/*final static double ARM_MIN_RANGE  = 0.60;
-	final static double ARM_MAX_RANGE  = 1.5;
-	final static double ARM_DELTA = 0.2;
-	final static double ARM_SPEED_MULTIPLIER = 1.0;
-	final static double WINCH_SPEED_MULTIPLIER = 1.0;
-	*/
 
 	DcMotor motorFrontRight;
 	DcMotor motorBackRight;
 	DcMotor motorFrontLeft;
 	DcMotor motorBackLeft;
 
-	//DcMotor winch;
-	//DcMotor arm;
+	DcMotor winch;
+	DcMotor arm;
 
 	/**
 	 * Constructor
@@ -73,7 +68,6 @@ public class K9TeleOp extends OpMode {
 	 */
 	@Override
 	public void init() {
-
 
 		/*
 		 * Use the hardwareMap to get the dc motors and servos by name. Note
@@ -92,13 +86,14 @@ public class K9TeleOp extends OpMode {
 		 *    "servo_1" controls the arm joint of the manipulator.
 		 *    "servo_6" controls the claw joint of the manipulator.
 		 */
-		motorFrontRight = hardwareMap.dcMotor.get("motor_2");
-		motorFrontLeft = hardwareMap.dcMotor.get("motor_0");
-		motorBackRight = hardwareMap.dcMotor.get("motor_3");
-		motorBackLeft = hardwareMap.dcMotor.get("motor_1");
+		motorFrontRight = hardwareMap.dcMotor.get("motorFR");
+		motorFrontLeft = hardwareMap.dcMotor.get("motorFL");
+		motorBackRight = hardwareMap.dcMotor.get("motorBR");
+		motorBackLeft = hardwareMap.dcMotor.get("motorBL");
 
-		//arm = hardwareMap.dcMotor.get("motor_4");
-		//winch = hardwareMap.dcMotor.get("motor_5");
+		arm = hardwareMap.dcMotor.get("motorArm");
+		winch = hardwareMap.dcMotor.get("motorWinch");
+
 
 
 
@@ -106,23 +101,13 @@ public class K9TeleOp extends OpMode {
 
 	/*
 	 * This method will be called repeatedly in a loop
-	 * 
+	 *
 	 * @see com.qualcomm.robotcore.eventloop.opmode.OpMode#run()
 	 */
 	@Override
 	public void loop() {
 
-		/*
-		 * Gamepad 1
-		 * 
-		 * Gamepad 1 controls the motors via the left stick, and it controls the
-		 * wrist/claw via the a,b, x, y buttons
-		 */
 
-		// throttle: left_stick_y ranges from -1 to 1, where -1 is full up, and
-		// 1 is full down
-		// direction: left_stick_x ranges from -1 to 1, where -1 is full left
-		// and 1 is full right
 		float throttleLeft = -gamepad1.left_stick_y;
 		float throttleRight = -gamepad1.right_stick_y;
 
@@ -142,41 +127,10 @@ public class K9TeleOp extends OpMode {
 		motorFrontLeft.setPower(left);
 		motorBackLeft.setPower(left);
 
-		// throttle: left_stick_y ranges from -1 to 1, where -1 is full up, and
-		// 1 is full down
-
-		/**
-
-		 float winchPower = -gamepad2.left_stick_y;
-
-		 // clip the right/left values so that the values never exceed +/- 1
-		 winchPower = Range.clip(winchPower, -1, 1);
-
-		 // scale the joystick value to make it easier to control
-		 // the robot more precisely at slower speeds.
-		 winchPower = (float)scaleInput(winchPower);
 
 
-		 // write the values to the motors
-		 winch.setPower(winchPower);
 
-		 float armPosition = 0.5f;
 
-		 // update the position of the arm.
-		 if (gamepad2.a && armPosition < ARM_MAX_RANGE) {
-		 // if the A button is pushed on gamepad2, increment the position of
-		 // the arm servo.
-		 armPosition += ARM_DELTA * ARM_SPEED_MULTIPLIER;
-		 }
-
-		 if (gamepad2.b && armPosition > ARM_MIN_RANGE) {
-		 // if the b button is pushed on gamepad2, decrease the position of
-		 // the arm servo.
-		 armPosition -= ARM_DELTA * ARM_SPEED_MULTIPLIER;
-		 }
-
-		 arm.setPower(armPosition);
-		 **/
 
 
 
