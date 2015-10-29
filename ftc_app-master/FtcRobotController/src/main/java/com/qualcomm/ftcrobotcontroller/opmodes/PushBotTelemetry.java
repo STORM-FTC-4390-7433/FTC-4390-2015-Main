@@ -80,24 +80,24 @@ public class PushBotTelemetry extends PushBotHardware
         telemetry.addData
             ( "01"
             , "Left Drive: "
-                + a_left_drive_power ()
+                +  FrontLeftEncoderCount()
                 + ", "
-                + a_left_encoder_count ()
+                + BackLeftEncoderCount()
             );
         telemetry.addData
             ( "02"
             , "Right Drive: "
-                + a_right_drive_power ()
+                + FrontRightEncoderCount ()
                 + ", "
-                + a_right_encoder_count ()
+                + BacktRightEncoderCount()
             );
         telemetry.addData
             ( "03"
-            , "Left Arm: " + a_left_arm_power ()
+            , "Arm: " + ArmEncoderCount ()
             );
         telemetry.addData
             ( "04"
-            , "Hand Position: " + a_hand_position ()
+            , "Winch " + WinchEncoderCount()
             );
 
     } // update_telemetry

@@ -43,8 +43,8 @@ import com.qualcomm.ftcrobotcontroller.opmodes.PushBotHardware;
  */
 public class K9TeleOp extends OpMode {
 
-	final private int CLICKS_PER_ROTATION = 0;
-
+	final private double ARM_SPEED_MULTIPLIER = 1;
+	final private double WINCH_SPEED_MULTIPLIER = 1;
 
 	DcMotor motorFrontRight;
 	DcMotor motorBackRight;
@@ -76,16 +76,7 @@ public class K9TeleOp extends OpMode {
 		 */
 
 		
-		/*
-		 * For the demo Tetrix K9 bot we assume the following,
-		 *   There are two motors "motor_1" and "motor_2"
-		 *   "motor_1" is on the right side of the bot.
-		 *   "motor_2" is on the left side of the bot and reversed.
-		 *   
-		 * We also assume that there are two servos "servo_1" and "servo_6"
-		 *    "servo_1" controls the arm joint of the manipulator.
-		 *    "servo_6" controls the claw joint of the manipulator.
-		 */
+
 		motorFrontRight = hardwareMap.dcMotor.get("motorFR");
 		motorFrontLeft = hardwareMap.dcMotor.get("motorFL");
 		motorBackRight = hardwareMap.dcMotor.get("motorBR");
@@ -93,8 +84,6 @@ public class K9TeleOp extends OpMode {
 
 		arm = hardwareMap.dcMotor.get("motorArm");
 		winch = hardwareMap.dcMotor.get("motorWinch");
-
-
 
 
 	}
@@ -128,6 +117,30 @@ public class K9TeleOp extends OpMode {
 		motorBackLeft.setPower(left);
 
 
+		float winchInput = -gamepad2.left_stick_y;
+
+
+		// clip the right/left values so that the values never exceed +/- 1
+		Float winchOut = Range.clip(winchInput, -1, 1);
+
+
+		// scale the joystick value to make it easier to control
+		// the robot more precisely at slower speeds.
+		winchOut = (float)scaleInput(winchOut);
+
+
+		// write the values to the motors
+		winch.setPower(winchOut * WINCH_SPEED_MULTIPLIER);
+
+
+
+		if (gamepad2.a) {
+			arm.setPower(0.5 * ARM_SPEED_MULTIPLIER);
+		}
+
+		if (gamepad2.b) {
+			arm.setPower(-0.5 * ARM_SPEED_MULTIPLIER);
+		}
 
 
 

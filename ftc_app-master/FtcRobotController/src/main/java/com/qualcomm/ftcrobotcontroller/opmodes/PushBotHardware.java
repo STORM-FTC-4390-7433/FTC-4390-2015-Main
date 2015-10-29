@@ -488,8 +488,31 @@ public class PushBotHardware extends OpMode
 
     }
 
+    int ArmEncoderCount ()
+    {
+        int l_return = 0;
 
+        if (v_motor_Arm != null)
+        {
+            l_return = v_motor_Arm.getCurrentPosition ();
+        }
 
+        return l_return;
+
+    }
+
+    int WinchEncoderCount ()
+    {
+        int l_return = 0;
+
+        if (v_motor_Winch != null)
+        {
+            l_return = v_motor_Winch.getCurrentPosition ();
+        }
+
+        return l_return;
+
+    }
 
 
 
