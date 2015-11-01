@@ -42,7 +42,8 @@ import com.qualcomm.ftcrobotcontroller.opmodes.PushBotHardware;
  * Enables control of the robot via the gamepad
  */
 public class K9TeleOp extends OpMode {
-
+	final static double ARM_MIN_RANGE=0;
+	final static double ARM_MAX_RANGE=100;
 	final private double ARM_SPEED_MULTIPLIER = 1;
 	final private double WINCH_SPEED_MULTIPLIER = 1;
 
@@ -96,7 +97,9 @@ public class K9TeleOp extends OpMode {
 	@Override
 	public void loop() {
 
-
+		PushBotHardware encoder = new PushBotHardware();
+		encoder.reset_arm_encoder;
+		encoder.run_using_arm_encoder;
 		float throttleLeft = -gamepad1.left_stick_y;
 		float throttleRight = -gamepad1.right_stick_y;
 
@@ -134,12 +137,13 @@ public class K9TeleOp extends OpMode {
 
 
 
-		if (gamepad2.a) {
-			arm.setPower(0.5 * ARM_SPEED_MULTIPLIER);
+		if (gamepad2.a && encoder.a_arm_encoder_count < ARM_MAX_RANGE) {
+			//setPower1 might change to -1
+			arm.setPower1
 		}
 
-		if (gamepad2.b) {
-			arm.setPower(-0.5 * ARM_SPEED_MULTIPLIER);
+		if (gamepad2.y && encoder.y_arm_encoder_count > ARM_MIN_RANGE) {
+			arm.setPower-1;
 		}
 
 
