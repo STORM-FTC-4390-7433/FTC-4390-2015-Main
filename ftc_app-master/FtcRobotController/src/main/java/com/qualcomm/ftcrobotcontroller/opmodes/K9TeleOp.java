@@ -33,8 +33,8 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
-import com.qualcomm.ftcrobotcontroller.opmodes.PushBotHardware;
 
 /**
  * TeleOp Mode
@@ -43,16 +43,15 @@ import com.qualcomm.ftcrobotcontroller.opmodes.PushBotHardware;
  */
 public class K9TeleOp extends OpMode {
 
-	final private double ARM_SPEED_MULTIPLIER = 1;
-	final private double WINCH_SPEED_MULTIPLIER = 1;
 
-	DcMotor motorFrontRight;
-	DcMotor motorBackRight;
-	DcMotor motorFrontLeft;
-	DcMotor motorBackLeft;
 
-	DcMotor winch;
-	DcMotor arm;
+	DcMotor motorRight1;
+	DcMotor motorRight2;
+	DcMotor motorLeft1;
+	DcMotor motorLeft2;
+	//DcMotor motorArm;
+	//DcMotor motorWinch;
+	//Servo climberSwitch;
 
 	/**
 	 * Constructor
@@ -68,84 +67,97 @@ public class K9TeleOp extends OpMode {
 	 */
 	@Override
 	public void init() {
-
 		/*
 		 * Use the hardwareMap to get the dc motors and servos by name. Note
 		 * that the names of the devices must match the names used when you
 		 * configured your robot and created the configuration file.
 		 */
-
 		
-
-		motorFrontRight = hardwareMap.dcMotor.get("motorFR");
-		motorFrontLeft = hardwareMap.dcMotor.get("motorFL");
-		motorBackRight = hardwareMap.dcMotor.get("motorBR");
-		motorBackLeft = hardwareMap.dcMotor.get("motorBL");
-
-		arm = hardwareMap.dcMotor.get("motorArm");
-		winch = hardwareMap.dcMotor.get("motorWinch");
-
-
+		/*
+		 * For the demo Tetrix K9 bot we assume the following,
+		 *   There are two motors "motor_1" and "motor_2"
+		 *   "motor_1" is on the right side of the bot.
+		 *   "motor_2" is on the left side of the bot and reversed.
+		 *   
+		 * We also assume that there are two servos "servo_1" and "servo_6"
+		 *    "servo_1" controls the arm joint of the manipulator.
+		 *    "servo_6" controls the claw joint of the manipulator.
+		 */
+		motorRight1 = hardwareMap.dcMotor.get("motor_1");
+		motorRight2 = hardwareMap.dcMotor.get("motor_2");
+		motorLeft1 = hardwareMap.dcMotor.get("motor_3");
+		motorLeft2 = hardwareMap.dcMotor.get("motor_4");
+		//motorArm = hardwareMap.dcMotor.get("motor_5");
+		//motorWinch = hardwareMap.dcMotor.get("motor_6");
+		//motorLeft.setDirection(DcMotor.Direction.REVERSE);
 	}
 
 	/*
 	 * This method will be called repeatedly in a loop
-	 *
+	 * 
 	 * @see com.qualcomm.robotcore.eventloop.opmode.OpMode#run()
 	 */
 	@Override
 	public void loop() {
 
+		//PushBotHardware encoder = new PushBotHardware();
+		//encoder.reset_arm_encoder();
+		//encoder.run_using_arm_encoder();
+		/*
+		 * Gamepad 1
+		 * 
+		 * Gamepad 1 controls the motors via the left stick, and it controls the
+		 * wrist/claw via the a,b, x, y buttons
+		 */
 
+		// throttle: left_stick_y ranges from -1 to 1, where -1 is full up, and
+		// 1 is full down
+		// direction: left_stick_x ranges from -1 to 1, where -1 is full left
+		// and 1 is full right
 		float throttleLeft = -gamepad1.left_stick_y;
 		float throttleRight = -gamepad1.right_stick_y;
 
-
 		// clip the right/left values so that the values never exceed +/- 1
-		float right = Range.clip(throttleRight, -1, 1);
-		float left = Range.clip(throttleLeft, -1, 1);
+		throttleRight = Range.clip(throttleRight, -1, 1);
+		throttleLeft = Range.clip(throttleLeft, -1, 1);
 
 		// scale the joystick value to make it easier to control
 		// the robot more precisely at slower speeds.
-		right = (float)scaleInput(right);
-		left =  (float)scaleInput(left);
+		throttleRight = (float)scaleInput(throttleRight);
+		throttleLeft =  (float)scaleInput(throttleLeft);
 
 		// write the values to the motors
-		motorFrontRight.setPower(-right);
-		motorBackRight.setPower(-right);
-		motorFrontLeft.setPower(left);
-		motorBackLeft.setPower(left);
-
-
-		float winchInput = -gamepad2.left_stick_y;
-
-
-		// clip the right/left values so that the values never exceed +/- 1
-		Float winchOut = Range.clip(winchInput, -1, 1);
-
-
-		// scale the joystick value to make it easier to control
-		// the robot more precisely at slower speeds.
-		winchOut = (float)scaleInput(winchOut);
-
-
-		// write the values to the motors
-		winch.setPower(winchOut * WINCH_SPEED_MULTIPLIER);
-
-
-
-		if (gamepad2.a) {
-			arm.setPower(0.5 * ARM_SPEED_MULTIPLIER);
-		}
-
-		if (gamepad2.b) {
-			arm.setPower(-0.5 * ARM_SPEED_MULTIPLIER);
-		}
+		motorRight1.setPower(-throttleRight);
+		motorRight2.setPower(-throttleRight);
+		motorLeft1.setPower(throttleLeft);
+		motorLeft2.setPower(throttleLeft);
 
 
 
 
 
+
+		float throttleArm = -gamepad2.right_stick_y;
+		float throttleWinch = -gamepad1.left_stick_y;
+
+		throttleArm = Range.clip(throttleRight, -1, 1);
+		throttleWinch = Range.clip(throttleLeft, -1, 1);
+
+		throttleArm = (float)scaleInput(throttleRight);
+		throttleWinch =  (float)scaleInput(throttleLeft);
+
+		//motorArm.setPower(throttleArm);
+		//motorWinch.setPower(throttleWinch);
+
+		/*
+		 * Send telemetry data back to driver station. Note that if we are using
+		 * a legacy NXT-compatible motor controller, then the getPower() method
+		 * will return a null value. The legacy NXT-compatible motor controllers
+		 * are currently write only.
+		 */
+		telemetry.addData("Text", "*** Robot Data***");
+		telemetry.addData("left tgt pwr",  "left  pwr: " + String.format("%.2f", throttleLeft));
+		telemetry.addData("right tgt pwr", "right pwr: " + String.format("%.2f", throttleRight));
 
 	}
 
