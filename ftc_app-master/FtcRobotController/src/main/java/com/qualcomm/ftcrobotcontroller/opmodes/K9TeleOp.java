@@ -44,11 +44,18 @@ import com.qualcomm.robotcore.util.Range;
 public class K9TeleOp extends OpMode {
 
 
+	final static double ARM_MIN_RANGE=0;
+	final static double ARM_MAX_RANGE=100;
+	final private double ARM_SPEED_MULTIPLIER = 1;
+	final private double WINCH_SPEED_MULTIPLIER = 1;
+
 
 	DcMotor motorRight1;
 	DcMotor motorRight2;
 	DcMotor motorLeft1;
 	DcMotor motorLeft2;
+	double armPosition = 0;
+	double armDelta = 1.0;
 	//DcMotor motorArm;
 	//DcMotor motorWinch;
 	//Servo climberSwitch;
@@ -114,6 +121,10 @@ public class K9TeleOp extends OpMode {
 		// 1 is full down
 		// direction: left_stick_x ranges from -1 to 1, where -1 is full left
 		// and 1 is full right
+
+		PushBotHardware encoder = new PushBotHardware();
+		encoder.reset_arm_encoder();
+		encoder.run_using_arm_encoder();
 		float throttleLeft = -gamepad1.left_stick_y;
 		float throttleRight = -gamepad1.right_stick_y;
 
@@ -127,18 +138,41 @@ public class K9TeleOp extends OpMode {
 		throttleLeft =  (float)scaleInput(throttleLeft);
 
 		// write the values to the motors
-		motorRight1.setPower(-throttleRight);
+		motorRight1.setPower(throttleRight);
 		motorRight2.setPower(-throttleRight);
 		motorLeft1.setPower(throttleLeft);
-		motorLeft2.setPower(throttleLeft);
-
-
-
-
+		motorLeft2.setPower(-throttleLeft);
 
 
 		float throttleArm = -gamepad2.right_stick_y;
 		float throttleWinch = -gamepad1.left_stick_y;
+		// scale the joystick value to make it easier to control
+		// the robot more precisely at slower speeds.
+		//winchOut = (float)scaleInput(winchOut);
+
+
+		// write the values to the motors
+		//winch.setPower(winchOut * WINCH_SPEED_MULTIPLIER);
+
+		double armPower = 0;
+		double winchPower = 0;
+
+		if (gamepad1.a) {
+			// if the A button is pushed on gamepad1, increment the position of
+			// the arm servo.
+			armPosition += armDelta;
+			armPower = 0.166;  //changed from .083
+			winchPower = 2;  //from 1
+		}
+
+		if (gamepad1.y) {
+			// if the Y button is pushed on gamepad1, decrease the position of
+			// the arm servo.
+			armPosition -= armDelta;
+			armPower = -0.166;
+			winchPower = -2;
+		}
+
 
 		throttleArm = Range.clip(throttleRight, -1, 1);
 		throttleWinch = Range.clip(throttleLeft, -1, 1);
