@@ -1,93 +1,28 @@
-/* Copyright (c) 2014 Qualcomm Technologies Inc
-
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without modification,
-are permitted (subject to the limitations in the disclaimer below) provided that
-the following conditions are met:
-
-Redistributions of source code must retain the above copyright notice, this list
-of conditions and the following disclaimer.
-
-Redistributions in binary form must reproduce the above copyright notice, this
-list of conditions and the following disclaimer in the documentation and/or
-other materials provided with the distribution.
-
-Neither the name of Qualcomm Technologies Inc nor the names of its contributors
-may be used to endorse or promote products derived from this software without
-specific prior written permission.
-
-NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS
-LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
-THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
-
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
-
-/**
- * TeleOp Mode
- * <p>
- * Enables control of the robot via the gamepad
- */
 public class K9TeleOp extends OpMode {
-
 
 	final static double ARM_MIN_RANGE=0;
 	final static double ARM_MAX_RANGE=100;
 	final private double ARM_SPEED_MULTIPLIER = 1;
 	final private double WINCH_SPEED_MULTIPLIER = 1;
 
-
 	DcMotor motorRight;
 	DcMotor motorLeft;
-	double armPosition = 0;
 	double armDelta = 1.0;
 	DcMotor motorArm;
 	DcMotor motorWinch;
-	//Servo climberSwitch;
-
-	/**
-	 * Constructor
-	 */
 	public K9TeleOp() {
 
 	}
 
-	/*
-	 * Code to run when the op mode is first enabled goes here
-	 * 
-	 * @see com.qualcomm.robotcore.eventloop.opmode.OpMode#start()
-	 */
 	@Override
 	public void init() {
-		/*
-		 * Use the hardwareMap to get the dc motors and servos by name. Note
-		 * that the names of the devices must match the names used when you
-		 * configured your robot and created the configuration file.
-		 */
-		
-		/*
-		 * For the demo Tetrix K9 bot we assume the following,
-		 *   There are two motors "motor_1" and "motor_2"
-		 *   "motor_1" is on the right side of the bot.
-		 *   "motor_2" is on the left side of the bot and reversed.
-		 *   
-		 * We also assume that there are two servos "servo_1" and "servo_6"
-		 *    "servo_1" controls the arm joint of the manipulator.
-		 *    "servo_6" controls the claw joint of the manipulator.
-		 */
+
 		motorRight = hardwareMap.dcMotor.get("RIGHT");
 		motorLeft = hardwareMap.dcMotor.get("LEFT");
 		motorArm = hardwareMap.dcMotor.get("ARM");
@@ -119,8 +54,8 @@ public class K9TeleOp extends OpMode {
 		// and 1 is full right
 
 		PushBotHardware encoder = new PushBotHardware();
-		encoder.reset_arm_encoder();
-		encoder.run_using_arm_encoder();
+//		encoder.reset_arm_encoder();
+//		encoder.run_using_arm_encoder();
 		float throttleLeft = -gamepad1.left_stick_y;
 		float throttleRight = -gamepad1.right_stick_y;
 
@@ -144,14 +79,14 @@ public class K9TeleOp extends OpMode {
 		// write the values to the motors
 		//winch.setPower(winchOut * WINCH_SPEED_MULTIPLIER);
 
-		double armPower = 0;
-		double winchPower = 0;
+		float armPower = 0;
+		float winchPower = 0;
 
-		throttleArm = Range.clip(throttleRight, -1, 1);
-		throttleWinch = Range.clip(throttleLeft, -1, 1);
+		throttleArm = Range.clip(throttleArm, -.5, .5);
+		throttleWinch = Range.clip(throttleWinch, -.5, .5);
 
-		throttleArm = (float)scaleInput(throttleRight);
-		throttleWinch =  (float)scaleInput(throttleLeft);
+		throttleArm = (float)scaleInput(throttleArm);
+		throttleWinch =  (float)scaleInput(throttleWinch);
 
 		motorArm.setPower(throttleArm);
 		motorWinch.setPower(throttleWinch);
