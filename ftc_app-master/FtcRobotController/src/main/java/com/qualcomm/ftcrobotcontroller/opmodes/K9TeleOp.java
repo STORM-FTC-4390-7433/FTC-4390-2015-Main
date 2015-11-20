@@ -50,14 +50,12 @@ public class K9TeleOp extends OpMode {
 	final private double WINCH_SPEED_MULTIPLIER = 1;
 
 
-	DcMotor motorRight1;
-	DcMotor motorRight2;
-	DcMotor motorLeft1;
-	DcMotor motorLeft2;
+	DcMotor motorRight;
+	DcMotor motorLeft;
 	double armPosition = 0;
 	double armDelta = 1.0;
-	//DcMotor motorArm;
-	//DcMotor motorWinch;
+	DcMotor motorArm;
+	DcMotor motorWinch;
 	//Servo climberSwitch;
 
 	/**
@@ -90,12 +88,10 @@ public class K9TeleOp extends OpMode {
 		 *    "servo_1" controls the arm joint of the manipulator.
 		 *    "servo_6" controls the claw joint of the manipulator.
 		 */
-		motorRight1 = hardwareMap.dcMotor.get("motor_1");
-		motorRight2 = hardwareMap.dcMotor.get("motor_2");
-		motorLeft1 = hardwareMap.dcMotor.get("motor_3");
-		motorLeft2 = hardwareMap.dcMotor.get("motor_4");
-		//motorArm = hardwareMap.dcMotor.get("motor_5");
-		//motorWinch = hardwareMap.dcMotor.get("motor_6");
+		motorRight = hardwareMap.dcMotor.get("RIGHT");
+		motorLeft = hardwareMap.dcMotor.get("LEFT");
+		motorArm = hardwareMap.dcMotor.get("ARM");
+		motorWinch = hardwareMap.dcMotor.get("WINCH");
 		//motorLeft.setDirection(DcMotor.Direction.REVERSE);
 	}
 
@@ -128,24 +124,18 @@ public class K9TeleOp extends OpMode {
 		float throttleLeft = -gamepad1.left_stick_y;
 		float throttleRight = -gamepad1.right_stick_y;
 
-		// clip the right/left values so that the values never exceed +/- 1
 		throttleRight = Range.clip(throttleRight, -1, 1);
 		throttleLeft = Range.clip(throttleLeft, -1, 1);
 
-		// scale the joystick value to make it easier to control
-		// the robot more precisely at slower speeds.
 		throttleRight = (float)scaleInput(throttleRight);
 		throttleLeft =  (float)scaleInput(throttleLeft);
 
 		// write the values to the motors
-		motorRight1.setPower(throttleRight);
-		motorRight2.setPower(-throttleRight);
-		motorLeft1.setPower(throttleLeft);
-		motorLeft2.setPower(-throttleLeft);
-
+		motorRight.setPower(-throttleRight);
+		motorLeft.setPower(throttleLeft);
 
 		float throttleArm = -gamepad2.right_stick_y;
-		float throttleWinch = -gamepad1.left_stick_y;
+		float throttleWinch = -gamepad2.left_stick_y;
 		// scale the joystick value to make it easier to control
 		// the robot more precisely at slower speeds.
 		//winchOut = (float)scaleInput(winchOut);
@@ -157,31 +147,14 @@ public class K9TeleOp extends OpMode {
 		double armPower = 0;
 		double winchPower = 0;
 
-		if (gamepad1.a) {
-			// if the A button is pushed on gamepad1, increment the position of
-			// the arm servo.
-			armPosition += armDelta;
-			armPower = 0.166;  //changed from .083
-			winchPower = 2;  //from 1
-		}
-
-		if (gamepad1.y) {
-			// if the Y button is pushed on gamepad1, decrease the position of
-			// the arm servo.
-			armPosition -= armDelta;
-			armPower = -0.166;
-			winchPower = -2;
-		}
-
-
 		throttleArm = Range.clip(throttleRight, -1, 1);
 		throttleWinch = Range.clip(throttleLeft, -1, 1);
 
 		throttleArm = (float)scaleInput(throttleRight);
 		throttleWinch =  (float)scaleInput(throttleLeft);
 
-		//motorArm.setPower(throttleArm);
-		//motorWinch.setPower(throttleWinch);
+		motorArm.setPower(throttleArm);
+		motorWinch.setPower(throttleWinch);
 
 		/*
 		 * Send telemetry data back to driver station. Note that if we are using
