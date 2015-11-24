@@ -6,14 +6,10 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 public class K9TeleOp extends OpMode {
 
-	final static double ARM_MIN_RANGE=0;
-	final static double ARM_MAX_RANGE=100;
-	final private double ARM_SPEED_MULTIPLIER = 1;
-	final private double WINCH_SPEED_MULTIPLIER = 1;
+
 
 	DcMotor motorRight;
 	DcMotor motorLeft;
-	double armDelta = 1.0;
 	DcMotor motorArm;
 	DcMotor motorWinch;
 	public K9TeleOp() {
@@ -27,7 +23,7 @@ public class K9TeleOp extends OpMode {
 		motorLeft = hardwareMap.dcMotor.get("LEFT");
 		motorArm = hardwareMap.dcMotor.get("ARM");
 		motorWinch = hardwareMap.dcMotor.get("WINCH");
-		//motorLeft.setDirection(DcMotor.Direction.REVERSE);
+		//motorLeft.setDirection(DcMotodevr.Direction.REVERSE);
 	}
 
 	/*
@@ -43,7 +39,7 @@ public class K9TeleOp extends OpMode {
 		//encoder.run_using_arm_encoder();
 		/*
 		 * Gamepad 1
-		 * 
+		 *
 		 * Gamepad 1 controls the motors via the left stick, and it controls the
 		 * wrist/claw via the a,b, x, y buttons
 		 */
@@ -53,9 +49,7 @@ public class K9TeleOp extends OpMode {
 		// direction: left_stick_x ranges from -1 to 1, where -1 is full left
 		// and 1 is full right
 
-		PushBotHardware encoder = new PushBotHardware();
-//		encoder.reset_arm_encoder();
-//		encoder.run_using_arm_encoder();
+
 		float throttleLeft = -gamepad1.left_stick_y;
 		float throttleRight = -gamepad1.right_stick_y;
 
@@ -69,27 +63,19 @@ public class K9TeleOp extends OpMode {
 		motorRight.setPower(-throttleRight);
 		motorLeft.setPower(throttleLeft);
 
-		float throttleArm = -gamepad2.right_stick_y;
+
+		float throttleArm =	-gamepad2.right_stick_y;
 		float throttleWinch = -gamepad2.left_stick_y;
-		// scale the joystick value to make it easier to control
-		// the robot more precisely at slower speeds.
-		//winchOut = (float)scaleInput(winchOut);
 
-
-		// write the values to the motors
-		//winch.setPower(winchOut * WINCH_SPEED_MULTIPLIER);
-
-		float armPower = 0;
-		float winchPower = 0;
-
-		throttleArm = Range.clip(throttleArm, -.5, .5);
-		throttleWinch = Range.clip(throttleWinch, -.5, .5);
+		throttleArm = Range.clip(throttleArm, -1, 1);
+		throttleWinch = Range.clip(throttleWinch, -1, 1);
 
 		throttleArm = (float)scaleInput(throttleArm);
 		throttleWinch =  (float)scaleInput(throttleWinch);
 
-		motorArm.setPower(throttleArm);
-		motorWinch.setPower(throttleWinch);
+		motorArm.setPower(-throttleArm * 0.25);
+		motorWinch.setPower(throttleWinch * 0.25);
+
 
 		/*
 		 * Send telemetry data back to driver station. Note that if we are using
@@ -97,10 +83,10 @@ public class K9TeleOp extends OpMode {
 		 * will return a null value. The legacy NXT-compatible motor controllers
 		 * are currently write only.
 		 */
-		telemetry.addData("Text", "*** Robot Data***");
-		telemetry.addData("left tgt pwr",  "left  pwr: " + String.format("%.2f", throttleLeft));
-		telemetry.addData("right tgt pwr", "right pwr: " + String.format("%.2f", throttleRight));
-
+//		telemetry.addData("Text", "*** Robot Data***");
+//		telemetry.addData("left tgt pwr",  "left  pwr: " + String.format("%.2f", throttleLeft));
+//		telemetry.addData("right tgt pwr", "right pwr: " + String.format("%.2f", throttleRight));
+		//some useless comment
 	}
 
 	/*
@@ -119,9 +105,9 @@ public class K9TeleOp extends OpMode {
 	 * scaled value is less than linear.  This is to make it easier to drive
 	 * the robot more precisely at slower speeds.
 	 */
-	double scaleInput(double dVal)  {
-		double[] scaleArray = { 0.0, 0.05, 0.09, 0.10, 0.12, 0.15, 0.18, 0.24,
-				0.30, 0.36, 0.43, 0.50, 0.60, 0.72, 0.85, 1.00, 1.00 };
+	double scaleInput(double dVal) {
+		double[] scaleArray = {0.0, 0.05, 0.09, 0.10, 0.12, 0.15, 0.18, 0.24,
+				0.30, 0.36, 0.43, 0.50, 0.60, 0.72, 0.85, 1.00, 1.00};
 
 		// get the corresponding index for the scaleInput array.
 		int index = (int) (dVal * 16.0);

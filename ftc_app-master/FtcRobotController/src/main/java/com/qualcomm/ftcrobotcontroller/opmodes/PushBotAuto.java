@@ -24,9 +24,9 @@ public class PushBotAuto extends PushBotTelemetry
                 break;
             case 1:
                 start = System.currentTimeMillis();
-                motorRight.setPower(.57);
+                motorRight.setPower(-0.57);
                 motorLeft.setPower(1.0);
-                if (System.currentTimeMillis() - start >= 935.2)
+                if (System.currentTimeMillis() - start >= 1035.2)
                 {
                     motorRight.setPower(0.0);
                     motorLeft.setPower(0.0);
