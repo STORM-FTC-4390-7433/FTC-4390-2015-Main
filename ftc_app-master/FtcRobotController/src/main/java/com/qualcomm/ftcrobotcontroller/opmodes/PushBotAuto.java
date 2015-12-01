@@ -5,6 +5,7 @@ public class PushBotAuto extends PushBotTelemetry
     DcMotor motorRight;
     DcMotor motorLeft;
     public long start, elapsed;
+    final static int milliPerTile = 1000;
     public PushBotAuto ()
     {
         start();
@@ -24,22 +25,22 @@ public class PushBotAuto extends PushBotTelemetry
                 break;
             case 1:
                 start = System.currentTimeMillis();
-                motorRight.setPower(1.0);
+                motorRight.setPower(-1.0);
                 motorLeft.setPower(1.0);
-                if (System.currentTimeMillis() - start >= 1000)
-                {
-                    motorRight.setPower(-1.0);
-                    motorLeft.setPower(1.0);
-
-                }
-
-                if (System.currentTimeMillis() - start >= 2000)
+                if (System.currentTimeMillis() - start >= 2 * milliPerTile)
                 {
                     motorRight.setPower(1.0);
                     motorLeft.setPower(1.0);
+
                 }
 
-                if (System.currentTimeMillis() - start >= 3000)
+                if (System.currentTimeMillis() - start >= 3 * milliPerTile)
+                {
+                    motorRight.setPower(-1.0);
+                    motorLeft.setPower(1.0);
+                }
+
+                if (System.currentTimeMillis() - start >= 5 * milliPerTile)
                 {
                     break;
                 }
