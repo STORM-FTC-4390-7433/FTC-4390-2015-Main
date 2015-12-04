@@ -29,35 +29,38 @@ public class PushBotAuto extends PushBotTelemetry
                 motorLeft.setPower(1.0);
                 if (System.currentTimeMillis() - start >= 2 * milliPerTile)
                 {
+                    v_state ++;
+                }
+                long currentTime = System.currentTimeMillis() - start;
+                telemetry.addData("19", "Current Time: " + currentTime);
+                break;
+
+
+            case 2:
+                if(System.currentTimeMillis() - start >= 3 * milliPerTile)
+                {
                     motorRight.setPower(1.0);
                     motorLeft.setPower(1.0);
-
                 }
+                break;
 
-                if (System.currentTimeMillis() - start >= 3 * milliPerTile)
+            case 3:
+                if (System.currentTimeMillis() - start >= 5 * milliPerTile)
                 {
                     motorRight.setPower(-1.0);
                     motorLeft.setPower(1.0);
                 }
-
-                if (System.currentTimeMillis() - start >= 5 * milliPerTile)
-                {
-                    break;
-                }
-
-
+                motorRight.setPower(0);
+                motorLeft.setPower(0);
+                v_state ++;
                 break;
 
             default:
-
                 break;
         }
 
         update_telemetry (); // Update common telemetry
         telemetry.addData ("18", "State: " + v_state);
-
     }
-
     private int v_state = 0;
-
 }

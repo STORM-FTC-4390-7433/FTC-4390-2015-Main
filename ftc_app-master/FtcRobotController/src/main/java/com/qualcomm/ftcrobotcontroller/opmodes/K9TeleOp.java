@@ -12,6 +12,7 @@ public class K9TeleOp extends OpMode {
 	DcMotor motorLeft;
 	DcMotor motorArm;
 	DcMotor motorWinch;
+	double scalar;
 	public K9TeleOp() {
 
 	}
@@ -49,6 +50,12 @@ public class K9TeleOp extends OpMode {
 		// direction: left_stick_x ranges from -1 to 1, where -1 is full left
 		// and 1 is full right
 
+		if (gamepad1.right_bumper) {
+			scalar = 0.5;
+		}
+		else {
+			scalar = 1;
+		}
 
 		float throttleLeft = -gamepad1.left_stick_y;
 		float throttleRight = -gamepad1.right_stick_y;
@@ -60,8 +67,8 @@ public class K9TeleOp extends OpMode {
 		throttleLeft =  (float)scaleInput(throttleLeft);
 
 		// write the values to the motors
-		motorRight.setPower(-throttleRight);
-		motorLeft.setPower(throttleLeft);
+		motorRight.setPower(-throttleRight * scalar);
+		motorLeft.setPower(throttleLeft * scalar);
 
 
 		float throttleArm =	-gamepad2.right_stick_y;
